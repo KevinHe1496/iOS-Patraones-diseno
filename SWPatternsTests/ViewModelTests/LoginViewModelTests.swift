@@ -23,7 +23,7 @@ private final class SuccessUseCaseMock: LoginUseCaseContract {
         func execute(credentials: SWPatterns.Credentials, completion: @escaping (Result<Void, Error>) -> Void) {
             XCTAssertEqual(credentials.username, "kevin_heredia10@hotmail.com")
             XCTAssertEqual(credentials.password, "1234")
-            completion(.failure(LoginUseCaseError(reason: "Error")))
+            completion(.failure(NSError(domain: "patternMVVM", code: 3)))
         }
     }
 
@@ -68,6 +68,43 @@ final class LoginViewModelTests: XCTestCase {
     }
     
     
+    func test_login_success() {
+        let loginExpectation =  self.expectation(description: "Login Success")
+        let loadingExpectation = self.expectation(description: "Loading Success")
+        let useMock = SuccessUseCaseMock()
+        let sut = LoginViewModel(useCase: useMock)
+        
+        sut.onStateChanged.bind { newState in
+            if case .loading = newState {
+                loadingExpectation.fulfill()
+            }else if case .success = newState {
+                loginExpectation.fulfill()
+            }
+        }
+        sut.signIn("kevin_heredia10@hotmail.com", "1234")
+        waitForExpectations(timeout: 5)
+        
+    }
+    
+    
+    
+    func test_login_failured() {
+        let loginExpectation =  self.expectation(description: "Login Success failured")
+        let loadingExpectation = self.expectation(description: "Loading Success failured")
+        let useMock = FailUseCaseMock()
+        let sut = LoginViewModel(useCase: useMock)
+        
+        sut.onStateChanged.bind { newState in
+            if case .loading = newState {
+                loadingExpectation.fulfill()
+            }else if case .error = newState {
+                loginExpectation.fulfill()
+            }
+        }
+        sut.signIn("kevin_heredia10@hotmail.com", "1234")
+        waitForExpectations(timeout: 5)
+        
+    }
     
     
 }
