@@ -10,7 +10,7 @@ import Foundation
 
 protocol LoginUseCaseContract {
     
-    func execute(credentials: Credentials, completion: @escaping (Result<Void, LoginUseCaseError>) -> Void)
+    func execute(credentials: Credentials, completion: @escaping (Result<Void, Error>) -> Void)
     
 }
 
@@ -22,7 +22,7 @@ final class LoginUseCase: LoginUseCaseContract {
         self.dataSource = dataSource
     }
     
-    func execute(credentials: Credentials, completion: @escaping (Result<Void, LoginUseCaseError>) -> Void) {
+    func execute(credentials: Credentials, completion: @escaping (Result<Void, Error>) -> Void) {
         
         // 1. Validamos que el nombre de usuario no sea nulo y sea válido.
         guard validateUsername(credentials.username) else{

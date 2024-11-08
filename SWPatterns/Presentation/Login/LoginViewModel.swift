@@ -26,12 +26,19 @@ final class LoginViewModel {
     // Función `signIn` que realiza el proceso de login.
     // Recibe dos parámetros opcionales: el nombre de usuario (`username`) y la contraseña (`password`).
     func signIn(_ username: String?, _ password: String?) {
+        guard let username else {
+            return onStateChanged.update(newValue: .error(reason: "Invalid Username"))
+        }
+        
+        guard let password else {
+            return onStateChanged.update(newValue: .error(reason: "Invalid Password"))
+        }
         // Actualizamos el estado a 'loading' para notificar a la interfaz de que el proceso de login ha comenzado.
         onStateChanged.update(newValue: .loading)
         
         // Creamos un objeto `Credentials` con los datos proporcionados. Si `username` o `password` son nulos,
         // se reemplazan por una cadena vacía.
-        let credentials = Credentials(username: username ?? "", password: password ?? "")
+        let credentials = Credentials(username: username, password: password)
         
         // Ejecutamos el caso de uso con las credenciales. Esto realiza la llamada de login (generalmente asincrónica).
         useCase.execute(credentials: credentials) { [weak self] result in
